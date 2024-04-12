@@ -1,36 +1,29 @@
+package fr.hetic;
+
 import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BinaryOperator;
 
 public class Calculateur {
-    public static void main(String[] args) {
-        if (args.length != 3) {
-            System.out.println("Le calculateur a besoin de 3 paramètres pour fonctionner <nombre> <nombre> <opérateur>");
-            return;
-        }
 
-        double nombre1, nombre2;
-        String operateur;
-
+    public static double calculate(String num1, String num2, String operator) {
+        double a, b;
         try {
-            nombre1 = Double.parseDouble(args[0]);
-            nombre2 = Double.parseDouble(args[1]);
-            operateur = args[2];
+            a = Double.parseDouble(num1);
+            b = Double.parseDouble(num2);
         } catch (NumberFormatException e) {
-            System.out.println("Les deux premiers arguments doivent être des nombres");
-            return;
+            return Double.NaN;
         }
 
-        HashMap<String, Operation> operations = new HashMap<>();
-        operations.put("+", new Addition());
-        operations.put("-", new Soustraction());
-        operations.put("*", new Multiplication());
+        Map<String, BinaryOperator<Double>> operations = new HashMap<>();
+        operations.put("+", (x, y) -> x + y);
+        operations.put("-", (x, y) -> Math.abs(x - y));
 
-        Operation operation = operations.get(operateur);
+        BinaryOperator<Double> operation = operations.get(operator);
         if (operation == null) {
-            System.out.println("Opérateur non supporté");
-            return;
+            return Double.NaN;
         }
 
-        double resultat = operation.calculer(nombre1, nombre2);
-        System.out.println("Résultat de l'opération : " + resultat);
+        return operation.apply(a, b);
     }
 }
